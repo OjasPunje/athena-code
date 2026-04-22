@@ -20,6 +20,8 @@
 
 #include "athena_arm_controllers/manual_arm_cylindrical_controller.hpp"
 
+#include <algorithm>
+#include <cmath>
 #include <limits>
 #include <memory>
 #include <string>
@@ -45,12 +47,34 @@ static constexpr rmw_qos_profile_t rmw_qos_profile_services_hist_keep_all = {
 
 using ControllerReferenceMsg = arm_controllers::ManualArmCylindricalController::ControllerReferenceMsg;
 
+constexpr double LIMIT_RANGE_TOLERANCE = 1e-6;
+
 // called from RT control loop
 void reset_controller_reference_msg(
   std::shared_ptr<ControllerReferenceMsg> & msg, const int & axes_count, const int & button_count)
 {
   msg->axes.resize(axes_count, std::numeric_limits<double>::quiet_NaN());
   msg->buttons.resize(button_count, std::numeric_limits<int32_t>::quiet_NaN());
+}
+
+void apply_software_hard_limit(
+  const double position, double & velocity, const double lower_limit, const double upper_limit)
+{
+  if (!std::isfinite(lower_limit) || !std::isfinite(upper_limit))
+  {
+    return;
+  }
+
+  if (!std::isfinite(position))
+  {
+    velocity = 0.0;
+    return;
+  }
+
+  if ((position <= lower_limit && velocity < 0.0) || (position >= upper_limit && velocity > 0.0))
+  {
+    velocity = 0.0;
+  }
 }
 
 }  // namespace
@@ -102,6 +126,63 @@ controller_interface::CallbackReturn ManualArmCylindricalController::on_configur
   current_joint_positions_.resize(params_.joints.size(), 0.0);
   joint_velocities_.resize(params_.joints.size(), 0.0); // Output
   command_velocities_.resize(CMD_VELOCITIES_SIZE, 0.0); // Input
+
+  const double negative_infinity = -std::numeric_limits<double>::infinity();
+  const double positive_infinity = std::numeric_limits<double>::infinity();
+  joint_lower_limits_.assign(params_.joints.size(), negative_infinity);
+  joint_upper_limits_.assign(params_.joints.size(), positive_infinity);
+  joint_max_ranges_.assign(params_.joints.size(), positive_infinity);
+
+  if (
+    params_.limited_joints.size() != params_.joint_lower_limits.size() ||
+    params_.limited_joints.size() != params_.joint_upper_limits.size() ||
+    params_.limited_joints.size() != params_.joint_max_ranges.size())
+  {
+    RCLCPP_FATAL(
+      get_node()->get_logger(),
+      "Software hard limit parameter sizes must match: limited_joints=%zu, lower=%zu, upper=%zu, max_ranges=%zu",
+      params_.limited_joints.size(), params_.joint_lower_limits.size(),
+      params_.joint_upper_limits.size(), params_.joint_max_ranges.size());
+    return controller_interface::CallbackReturn::FAILURE;
+  }
+
+  for (size_t limit_index = 0; limit_index < params_.limited_joints.size(); ++limit_index)
+  {
+    const auto joint_it = std::find(params_.joints.begin(), params_.joints.end(), params_.limited_joints[limit_index]);
+    if (joint_it == params_.joints.end())
+    {
+      RCLCPP_FATAL(
+        get_node()->get_logger(), "Limited joint '%s' is not controlled by this controller.",
+        params_.limited_joints[limit_index].c_str());
+      return controller_interface::CallbackReturn::FAILURE;
+    }
+
+    const size_t joint_index = static_cast<size_t>(std::distance(params_.joints.begin(), joint_it));
+    const double lower_limit = params_.joint_lower_limits[limit_index];
+    const double upper_limit = params_.joint_upper_limits[limit_index];
+    const double max_range = params_.joint_max_ranges[limit_index];
+
+    if (upper_limit < lower_limit)
+    {
+      RCLCPP_FATAL(
+        get_node()->get_logger(), "Software hard limits for joint '%s' are inverted: lower=%f upper=%f",
+        params_.limited_joints[limit_index].c_str(), lower_limit, upper_limit);
+      return controller_interface::CallbackReturn::FAILURE;
+    }
+
+    if (max_range <= 0.0 || (upper_limit - lower_limit) - max_range > LIMIT_RANGE_TOLERANCE)
+    {
+      RCLCPP_FATAL(
+        get_node()->get_logger(),
+        "Software hard limit range for joint '%s' is invalid: lower=%f upper=%f max_range=%f",
+        params_.limited_joints[limit_index].c_str(), lower_limit, upper_limit, max_range);
+      return controller_interface::CallbackReturn::FAILURE;
+    }
+
+    joint_lower_limits_[joint_index] = lower_limit;
+    joint_upper_limits_[joint_index] = upper_limit;
+    joint_max_ranges_[joint_index] = max_range;
+  }
 
   // topics QoS
   auto subscribers_qos = rclcpp::SystemDefaultsQoS();
@@ -203,7 +284,7 @@ controller_interface::InterfaceConfiguration ManualArmCylindricalController::sta
   state_interfaces_config.names.reserve(state_joints_.size());
   for (const auto & joint : state_joints_)
   {
-    state_interfaces_config.names.push_back(joint + "/" + params_.interface_name);
+    state_interfaces_config.names.push_back(joint + "/position");
   }
 
   return state_interfaces_config;
@@ -265,6 +346,12 @@ controller_interface::return_type ManualArmCylindricalController::update(
   // Command: (yaw, vy, vz, thetadot, open claw, close claw) -> 
   // Joint Velocity: (Base Yaw, Shoulder Pitch, Elbow Pitch, Wrist Pitch, Wrist Roll, Open Claw, Close Claw)
   velocity_kinematics_calculations(command_velocities_, joint_velocities_, params_.joint_lengths, current_joint_positions_);
+
+  for (size_t i = 0; i < joint_velocities_.size(); ++i)
+  {
+    apply_software_hard_limit(
+      current_joint_positions_[i], joint_velocities_[i], joint_lower_limits_[i], joint_upper_limits_[i]);
+  }
 
   for (size_t i = 0; i < command_interfaces_.size(); ++i)
   {

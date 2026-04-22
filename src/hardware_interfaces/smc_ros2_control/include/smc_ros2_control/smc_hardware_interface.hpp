@@ -76,6 +76,7 @@ public:
   double calculate_joint_velocity_from_motor_velocity(double motor_velocity, int gear_ratio);
   int32_t calculate_motor_position_from_desired_joint_position(double joint_position, int gear_ratio);
   int32_t calculate_motor_velocity_from_desired_joint_velocity(double joint_velocity, int gear_ratio);
+  void apply_software_hard_limit(int joint_index);
 
 private:
   // Hardware Interface Parameters
@@ -119,6 +120,9 @@ private:
   std::vector<int> joint_node_ids;
   std::vector<int> joint_gear_ratios;
   std::vector<bool> joint_initialization_;
+  std::vector<double> joint_lower_limits_;
+  std::vector<double> joint_upper_limits_;
+  std::vector<double> joint_max_ranges_;
   
   // Modes for control mode
   enum integration_level_t : std::uint8_t

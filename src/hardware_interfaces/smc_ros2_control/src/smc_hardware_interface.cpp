@@ -21,6 +21,10 @@
 
 namespace smc_ros2_control
 {
+namespace
+{
+constexpr double LIMIT_RANGE_TOLERANCE = 1e-6;
+}
 
 double SMCHardwareInterface::calculate_joint_position_from_motor_position(double motor_position, int gear_ratio){
   // Converts from 0.01 deg to deg to radians/s
@@ -40,6 +44,36 @@ int32_t SMCHardwareInterface::calculate_motor_position_from_desired_joint_positi
 int32_t SMCHardwareInterface::calculate_motor_velocity_from_desired_joint_velocity(double joint_velocity, int gear_ratio){
   // radians/s -> deg/s -> 0.01 deg/s
   return static_cast<int32_t>(std::round((joint_velocity*(180/M_PI)*100)*gear_ratio));
+}
+
+void SMCHardwareInterface::apply_software_hard_limit(int joint_index)
+{
+  const double lower_limit = joint_lower_limits_[joint_index];
+  const double upper_limit = joint_upper_limits_[joint_index];
+
+  if (!std::isfinite(lower_limit) || !std::isfinite(upper_limit))
+  {
+    return;
+  }
+
+  if (std::isfinite(joint_command_position_[joint_index]))
+  {
+    joint_command_position_[joint_index] =
+      std::clamp(joint_command_position_[joint_index], lower_limit, upper_limit);
+  }
+
+  if (!std::isfinite(joint_state_position_[joint_index]))
+  {
+    joint_command_velocity_[joint_index] = 0.0;
+    return;
+  }
+
+  if (
+    (joint_state_position_[joint_index] <= lower_limit && joint_command_velocity_[joint_index] < 0.0) ||
+    (joint_state_position_[joint_index] >= upper_limit && joint_command_velocity_[joint_index] > 0.0))
+  {
+    joint_command_velocity_[joint_index] = 0.0;
+  }
 }
 
 void SMCHardwareInterface::send_command(int can_id, int cmd_id){
@@ -113,8 +147,29 @@ hardware_interface::CallbackReturn SMCHardwareInterface::on_init(
   // Setting Parameters
   for (auto& joint : info_.joints) {
     int gear_ratio = std::abs(std::stoi(joint.parameters.at("gear_ratio")));
+    const double lower_limit = joint.parameters.count("lower_limit") != 0 ?
+      std::stod(joint.parameters.at("lower_limit")) : -std::numeric_limits<double>::infinity();
+    const double upper_limit = joint.parameters.count("upper_limit") != 0 ?
+      std::stod(joint.parameters.at("upper_limit")) : std::numeric_limits<double>::infinity();
+    const double max_range = joint.parameters.count("max_range") != 0 ?
+      std::stod(joint.parameters.at("max_range")) : std::numeric_limits<double>::infinity();
+
+    if (
+      upper_limit < lower_limit || max_range <= 0.0 ||
+      (upper_limit - lower_limit) - max_range > LIMIT_RANGE_TOLERANCE)
+    {
+      RCLCPP_FATAL(
+        rclcpp::get_logger("SMCHardwareInterface"),
+        "Software hard limits for joint '%s' are invalid: lower=%f upper=%f max_range=%f",
+        joint.name.c_str(), lower_limit, upper_limit, max_range);
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+
     joint_node_ids.push_back(std::clamp(std::stoi(joint.parameters.at("node_id"), nullptr, 0), 0x141, 0x160));
     joint_gear_ratios.push_back(gear_ratio);
+    joint_lower_limits_.push_back(lower_limit);
+    joint_upper_limits_.push_back(upper_limit);
+    joint_max_ranges_.push_back(max_range);
     operating_velocity = std::clamp(std::stoi(joint.parameters.at("operating_velocity")), 0, 65*gear_ratio);
   }
 
@@ -370,6 +425,7 @@ hardware_interface::return_type smc_ros2_control::SMCHardwareInterface::write(
       can_tx_frame_ = CANLib::CanFrame(); // Must reinstantiate else data from past iteration gets repeated
       can_tx_frame_.id = joint_node_ids[i];
       can_tx_frame_.dlc = 8;
+      apply_software_hard_limit(i);
 
       if(control_level_[i] == integration_level_t::POSITION && std::isfinite(joint_command_position_[i])) {
         

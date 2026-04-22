@@ -15,6 +15,9 @@
         <param name="gear_ratio">100</param>
         <param name="joint_orientation">1.0</param>
         <param name="operating_velocity">150</param> <!-- motor dps -->
+        <param name="lower_limit">-3.141592654</param> <!-- temporary full-circle test limit, -180 deg -->
+        <param name="upper_limit">3.141592654</param> <!-- temporary full-circle test limit, 180 deg -->
+        <param name="max_range">6.283185308</param> <!-- temporary full-circle test range, 360 deg -->
         <state_interface name="position"/>
         <state_interface name="velocity"/>
         <state_interface name="motor_temperature"/>
@@ -26,6 +29,9 @@
         <param name="gear_ratio">100</param>
         <param name="joint_orientation">1.0</param>
         <param name="operating_velocity">150</param> <!-- motor dps -->
+        <param name="lower_limit">-3.141592654</param> <!-- temporary full-circle test limit, -180 deg -->
+        <param name="upper_limit">3.141592654</param> <!-- temporary full-circle test limit, 180 deg -->
+        <param name="max_range">6.283185308</param> <!-- temporary full-circle test range, 360 deg -->
         <state_interface name="position"/>
         <state_interface name="velocity"/>
         <state_interface name="motor_temperature"/>

@@ -14,6 +14,11 @@
         <param name="node_id">0x148</param>
         <param name="gear_ratio">-100</param>
         <param name="operating_velocity">300</param> <!-- motor dps -->
+        <!-- Optional software hard limits:
+        <param name="lower_limit">TODO_LOWER_RAD</param>
+        <param name="upper_limit">TODO_UPPER_RAD</param>
+        <param name="max_range">TODO_MAX_RANGE_RAD</param>
+        -->
         <command_interface name="position"/>
         <command_interface name="velocity"/>
         <state_interface name="position"/>
@@ -26,6 +31,11 @@
         <param name="node_id">0x145</param>
         <param name="gear_ratio">40</param>
         <param name="operating_velocity">1000</param> <!-- motor dps -->
+        <!-- Optional software hard limits:
+        <param name="lower_limit">TODO_LOWER_RAD</param>
+        <param name="upper_limit">TODO_UPPER_RAD</param>
+        <param name="max_range">TODO_MAX_RANGE_RAD</param>
+        -->
         <command_interface name="position"/>
         <command_interface name="velocity"/>
         <state_interface name="position"/>
@@ -38,6 +48,11 @@
         <param name="node_id">0x147</param>
         <param name="gear_ratio">40</param>
         <param name="operating_velocity">1000</param> <!-- motor dps -->
+        <!-- Optional software hard limits:
+        <param name="lower_limit">TODO_LOWER_RAD</param>
+        <param name="upper_limit">TODO_UPPER_RAD</param>
+        <param name="max_range">TODO_MAX_RANGE_RAD</param>
+        -->
         <command_interface name="position"/>
         <command_interface name="velocity"/>
         <state_interface name="position"/>

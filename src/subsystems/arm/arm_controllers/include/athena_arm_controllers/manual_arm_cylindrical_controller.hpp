@@ -119,6 +119,11 @@ protected:
   // Placeholder for the current joint positions
   std::vector<double> current_joint_positions_;
 
+  // Software hard limit parameters, ordered to match command_interfaces_.
+  std::vector<double> joint_lower_limits_;
+  std::vector<double> joint_upper_limits_;
+  std::vector<double> joint_max_ranges_;
+
   // Command subscribers and Controller State publisher
   rclcpp::Subscription<ControllerReferenceMsg>::SharedPtr ref_subscriber_ = nullptr;
   realtime_tools::RealtimeBuffer<std::shared_ptr<ControllerReferenceMsg>> input_ref_;

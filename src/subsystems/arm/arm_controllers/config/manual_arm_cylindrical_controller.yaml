@@ -57,3 +57,30 @@ manual_arm_cylindrical_controller:
       not_empty<>: null,
     }
   }
+  limited_joints: {
+    type: string_array,
+    default_value: [],
+    description: "Joints with software hard limits enabled.",
+    read_only: true,
+    validation: {
+      unique<>: null,
+    }
+  }
+  joint_lower_limits: {
+    type: double_array,
+    default_value: [],
+    description: "Lower software hard limits in radians, ordered to match limited_joints.",
+    read_only: true,
+  }
+  joint_upper_limits: {
+    type: double_array,
+    default_value: [],
+    description: "Upper software hard limits in radians, ordered to match limited_joints.",
+    read_only: true,
+  }
+  joint_max_ranges: {
+    type: double_array,
+    default_value: [],
+    description: "Maximum allowed lower-to-upper range in radians, ordered to match limited_joints.",
+    read_only: true,
+  }

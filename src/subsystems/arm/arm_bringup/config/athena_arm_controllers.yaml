@@ -100,6 +100,18 @@ manual_arm_cylindrical_controller:
       - 0.53
       - 0.53
       - 0.22
+    limited_joints:
+      - shoulder_pitch
+      - elbow_pitch
+    joint_lower_limits:
+      - -3.141592654  # shoulder_pitch: temporary full-circle test limit, -180 deg
+      - -3.141592654  # elbow_pitch: temporary full-circle test limit, -180 deg
+    joint_upper_limits:
+      - 3.141592654   # shoulder_pitch: temporary full-circle test limit, 180 deg
+      - 3.141592654   # elbow_pitch: temporary full-circle test limit, 180 deg
+    joint_max_ranges:
+      - 6.283185308   # shoulder_pitch: temporary full-circle test range, 360 deg
+      - 6.283185308   # elbow_pitch: temporary full-circle test range, 360 deg
 
 manual_arm_joint_by_joint_controller:
   ros__parameters:
