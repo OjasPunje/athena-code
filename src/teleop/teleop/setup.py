@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'joystick = teleop.joystick_publisher:main'
+            'joystick = teleop.joystick_publisher:main',
+            'radio_status = teleop.radio_status_node:main',
         ],
     },
 )

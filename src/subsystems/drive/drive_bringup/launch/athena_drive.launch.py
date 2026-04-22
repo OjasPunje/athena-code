@@ -224,6 +224,22 @@ def launch_setup(context, *args, **kwargs):
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
 
+    radio_status_node = Node(
+        package="teleop",
+        executable="radio_status",
+        name="radio_status",
+        output="screen",
+        parameters=[
+            {
+                "input_topic": "/rear_ackermann_controller/reference",
+                "input_type": "geometry_msgs/msg/TwistStamped",
+                "output_topic": "/radio/status",
+                "timeout_sec": 1.0,
+                "publish_rate_hz": 5.0,
+            }
+        ],
+    )
+
     motor_status_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -352,6 +368,7 @@ def launch_setup(context, *args, **kwargs):
     jetson_actions = [
         control_node,
         robot_state_pub_node,
+        radio_status_node,
         delay_joint_state_broadcaster_spawner_after_ros2_control_node,
         delay_motor_status_broadcaster_after_joint_state_broadcaster,
         delay_rviz_after_joint_state_broadcaster_spawner,
