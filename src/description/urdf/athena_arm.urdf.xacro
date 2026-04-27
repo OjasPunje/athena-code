@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="athena_arm">
+
+  <!-- Launch file arguments -->
+  <xacro:arg name="prefix" default=""/>
+  <xacro:arg name="use_mock_hardware" default="false"/>
+  <xacro:arg name="mock_sensor_commands" default="false"/>
+  <xacro:arg name="sim_gazebo_classic" default="true"/>
+  <xacro:arg name="sim_gazebo" default="true"/>
+  <xacro:arg name="simulation_controllers" default=""/>
+
+  <!-- Macro Imports -->
+  <!-- Import athena_arm macro -->
+  <xacro:include filename="$(find description)/urdf/athena_arm_description.urdf.xacro"/>
+
+  <!-- Import mock ros2_control description -->
+  <xacro:include filename="$(find description)/config/mock.ros2_control.xacro" />
+
+  <!-- Import smc ros2_control description -->
+  <xacro:include filename="$(find description)/ros2_control/arm/arm.smc.ros2_control.xacro" />
+
+  <!-- Import talon ros2_control description -->
+  <xacro:include filename="$(find description)/ros2_control/arm/arm.talon.ros2_control.xacro" /> 
+
+  <!-- Import rmd ros2_control description -->
+  <xacro:include filename="$(find description)/ros2_control/arm/arm.rmd.ros2_control.xacro" />
+
+  <!-- Import servo ros2_control description -->
+  <xacro:include filename="$(find description)/ros2_control/arm/arm.servo.ros2_control.xacro" />
+
+  <!-- Import odrive ros2_control description -->
+  <!-- <xacro:include filename="$(find description)/config/odrive.ros2_control.xacro" /> -->
+
+
+  <!-- create link fixed to the "world" -->
+  <link name="world"/>
+
+  
+  <!-- Contains description of arm -->
+  <xacro:description/>
+
+
+  <xacro:if value="$(arg use_mock_hardware)">     <!-- MOCK -->
+    <xacro:mock_ros2_control name="mock"/>
+  </xacro:if>
+  <xacro:unless value="$(arg use_mock_hardware)"> <!-- HARDWARE -->
+    <xacro:smc_ros2_control name="smc"/>
+    <!--
+    <ros2_control name="talon_mock" type="system">
+      <hardware>
+        <plugin>mock_components/GenericSystem</plugin>
+      </hardware>
+      <joint name="gripper_claw">
+        <command_interface name="position"/>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <param name="initial_value">-0.0</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+    </ros2_control>
+    -->
+    <xacro:talon_ros2_control name="talon"/>
+    <xacro:rmd_ros2_control name="rmd"/>
+    <xacro:servo_ros2_control name="servo"/>
+    <!-- <xacro:odrive_ros2_control name="odrive"/> -->
+  </xacro:unless>
+
+</robot>

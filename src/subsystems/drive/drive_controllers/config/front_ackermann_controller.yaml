@@ -1,0 +1,64 @@
+# Parameters for the FrontAckermannController
+front_ackermann_controller:
+  drive_joints: {
+    type: string_array,
+    default_value: [],
+    description: "The names of the drive wheel joints."
+  }
+  steer_joints: {
+    type: string_array,
+    default_value: [],
+    description: "The names of the steering joints (front wheels)."
+  }
+  track_width: {
+    type: double,
+    default_value: 0.6604,
+    description: "Distance between left and right wheels in meters."
+  }
+  wheelbase: {
+    type: double,
+    default_value: 0.8382,
+    description: "Distance between front and rear axles in meters."
+  }
+  wheel_radius: {
+    type: double,
+    default_value: 0.254,
+    description: "Radius of the wheels in meters."
+  }
+  max_speed: {
+    type: double,
+    default_value: 1.27,
+    description: "Maximum linear speed in m/s."
+  }
+  max_steer_angle: {
+    type: double,
+    default_value: 0.785,
+    description: "Maximum steering angle in radians."
+  }
+
+  # Odometry parameters
+  open_loop: {
+    type: bool,
+    default_value: false,
+    description: "Use commanded velocities for odom (true) or actual encoder feedback (false)."
+  }
+  enable_odom_tf: {
+    type: bool,
+    default_value: false,
+    description: "Publish odom -> base_link TF transform."
+  }
+  odom_frame_id: {
+    type: string,
+    default_value: "odom",
+    description: "Frame ID for odometry."
+  }
+  base_frame_id: {
+    type: string,
+    default_value: "base_footprint",
+    description: "Child frame ID for odometry (robot base)."
+  }
+  velocity_rolling_window_size: {
+    type: int,
+    default_value: 10,
+    description: "Rolling window size for velocity smoothing."
+  }

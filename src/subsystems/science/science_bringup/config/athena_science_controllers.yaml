@@ -1,0 +1,106 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    joint_group_position_controller:             
+      type: position_controllers/JointGroupPositionController
+
+    joint_group_velocity_controller:              
+      type: velocity_controllers/JointGroupVelocityController
+
+    science_controller:
+      type: science_controllers/ScienceManual
+
+    # Laser GPIO Controller (CAN-based)
+    laser_gpio_controller:
+      type: gpio_controllers/GpioCommandController
+
+    motor_status_broadcaster:
+      type: general_controllers/MotorStatusBroadcaster
+
+joint_group_position_controller:                
+  ros__parameters:
+    joints:
+      - stepper_motor_a
+      - stepper_motor_b
+      - servo_rack_and_pinion_l
+      - servo_rack_and_pinion_r
+      - servo_scoop_a
+      - servo_scoop_b
+      - talon_scoop
+      - servo_sampler_lift_l
+      - servo_sampler_lift_l
+      - talon_auger
+      - servo_auger_lift
+    interface_name: position
+
+joint_group_velocity_controller:                 
+  ros__parameters:
+    joints:
+      - stepper_motor_a
+      - stepper_motor_b
+      - servo_rack_and_pinion_l
+      - servo_rack_and_pinion_r
+      - servo_scoop_a
+      - servo_scoop_b
+      - talon_scoop
+      - servo_sampler_lift_l
+      - servo_sampler_lift_r
+      - talon_auger
+      - servo_auger_lift
+    interface_name: velocity
+
+science_controller:
+  ros__parameters:
+    # Pumps
+    pump_a: "stepper_motor_a"
+    pump_b: "stepper_motor_b"
+    
+    # Lift
+    lift_rack_and_pinion_l: "servo_rack_and_pinion_l"
+    lift_rack_and_pinion_r: "servo_rack_and_pinion_r"
+    
+    # Scoops
+    scoop_servos: ["servo_scoop_a", "servo_scoop_b"]
+    scoop_spinner: "talon_scoop"
+
+    # Sampler
+    sampler_lift_l: "servo_sampler_lift_l"
+    sampler_lift_r: "servo_sampler_lift_r"
+    auger_spinner: "talon_auger"
+    cap: "servo_auger_lift"
+    interface_name: position 
+    command_interfaces: [position, velocity]
+    state_interfaces: [position, velocity]
+
+# Laser GPIO Controller Configuration
+laser_gpio_controller:
+  ros__parameters:
+    gpios:
+      - spectrometry_laser
+    command_interfaces:
+      spectrometry_laser:
+        interfaces:
+          - laser_command
+    state_interfaces:
+      spectrometry_laser:
+        interfaces:
+          - laser_state
+          - temperature
+          - is_connected
+
+motor_status_broadcaster:
+  ros__parameters:
+    joints:
+      - stepper_motor_a
+      - stepper_motor_b
+      - talon_lift
+      - talon_scoop
+    interfaces:
+      - motor_temperature
+      - torque_current
+    publish_rate: 10.0

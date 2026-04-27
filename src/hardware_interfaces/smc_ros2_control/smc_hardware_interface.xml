@@ -1,0 +1,9 @@
+<library path="smc_ros2_control"> <!-- library path which corresponds to cmake. There will be a file called smc_ros2_control.so somewhere in install-->
+  <class name="smc_ros2_control/SMCHardwareInterface"
+         type="smc_ros2_control::SMCHardwareInterface" 
+         base_class_type="hardware_interface::SystemInterface"> <!-- name and type rely on the namespace in the hardware interface. Keep this in mind -->
+    <description>
+      UMDLoop's ros2_control plugin for the SMC motors
+    </description>
+  </class>
+</library>

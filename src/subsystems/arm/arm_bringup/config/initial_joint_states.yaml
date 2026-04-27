@@ -1,0 +1,9 @@
+joint_state_publisher:
+  ros__parameters:
+    zeros:
+      base_yaw: 3.089
+      shoulder_pitch: 2.461
+      elbow_pitch: -2.631
+      wrist_pitch: -0.968
+      wrist_roll: 0.484
+      gripper_claw: -0.070

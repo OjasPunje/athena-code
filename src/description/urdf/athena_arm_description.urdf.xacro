@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="description">
+    <link
+      name="base">
+      <inertial>
+        <origin
+          xyz="-0.0420894636209823 -0.0119543937920771 0.0159452526937523"
+          rpy="0 0 0" />
+        <mass
+          value="2.56150300885664" />
+        <inertia
+          ixx="0.0153365608409806"
+          ixy="-5.59662628593009E-22"
+          ixz="3.1960963345014E-20"
+          iyy="0.0158151191004626"
+          iyz="9.27135204144795E-19"
+          izz="0.0310562780763686" />
+      </inertial>
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/base.STL" />
+        </geometry>
+        <material
+          name="">
+          <color
+            rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/base.STL" />
+        </geometry>
+      </collision>
+    </link>
+    <link
+      name="shoulder">
+      <inertial>
+        <origin
+          xyz="0.00527918694960809 0.0774819916801578 -0.0133622294690042"
+          rpy="0 0 0" />
+        <mass
+          value="4.54258438464217" />
+        <inertia
+          ixx="0.0149524360381011"
+          ixy="1.05243789551688E-08"
+          ixz="-0.00175247039872407"
+          iyy="0.0097049330132567"
+          iyz="-6.42446745450095E-09"
+          izz="0.0128509901610833" />
+      </inertial>
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/shoulder.STL" />
+        </geometry>
+        <material
+          name="">
+          <color
+            rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/shoulder.STL" />
+        </geometry>
+      </collision>
+    </link>
+
+      <!-- base_joint fixes base_link to the environment -->
+    <joint name="base_joint" type="fixed">
+      <parent link="world"/>
+      <child link="base"/>
+      <origin xyz="0 0 0" rpy="0 0 3.141592653"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+    <joint
+      name="base_yaw"
+      type="revolute">
+      <origin
+        xyz="-0.0420894636209815 -0.0119616169931191 0.0182598424192986"
+        rpy="1.5707963267949 0 1.05545161052463" />
+      <parent
+        link="base" />
+      <child
+        link="shoulder" />
+      <axis
+        xyz="0 1 0" />
+      <limit
+        lower="-6.28"
+        upper="6.28"
+        effort="1000.0"
+        velocity="0.5" />
+    </joint>
+    <link
+      name="bicep">
+      <inertial>
+        <origin
+          xyz="-0.0416416588937773 -7.41489180611232E-08 -0.48063013151933"
+          rpy="0 0 0" />
+        <mass
+          value="4.21157397014607" />
+        <inertia
+          ixx="0.0265183368486382"
+          ixy="1.23397720921899E-08"
+          ixz="-8.03880832341031E-06"
+          iyy="0.0238241678969636"
+          iyz="1.47058893537003E-08"
+          izz="0.00481440620919812" />
+      </inertial>
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/bicep.STL" />
+        </geometry>
+        <material
+          name="">
+          <color
+            rgba="0.529411764705882 0.549019607843137 0.549019607843137 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/bicep.STL" />
+        </geometry>
+      </collision>
+    </link>
+    <joint
+      name="shoulder_pitch"
+      type="revolute">
+      <origin
+        xyz="-0.0357971138440272 0.108175 0.00906194434350591"
+        rpy="-0.009615676863 0.515344716270268 0" />
+      <parent
+        link="shoulder" />
+      <child
+        link="bicep" />
+      <axis
+        xyz="-1 0 0" />
+      <limit
+        lower="-3.14"
+        upper="3.14"
+        effort="1000.0"
+        velocity="0.5" />
+    </joint>
+    <link
+      name="forearm">
+      <inertial>
+        <origin
+          xyz="-0.0440547498447728 5.43387206872192E-06 0.514014366835274"
+          rpy="0 0 0" />
+        <mass
+          value="3.86126583598226" />
+        <inertia
+          ixx="0.0145083815110241"
+          ixy="1.54311841827388E-07"
+          ixz="6.61231386236652E-06"
+          iyy="0.0117355736816318"
+          iyz="-7.15857024634727E-07"
+          izz="0.00478745398757672" />
+      </inertial>
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/forearm.STL" />
+        </geometry>
+        <material
+          name="">
+          <color
+            rgba="0.529411764705882 0.549019607843137 0.549019607843137 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/forearm.STL" />
+        </geometry>
+      </collision>
+    </link>
+    <joint
+      name="elbow_pitch"
+      type="revolute">
+      <origin
+        xyz="0.00308750000000001 0 -0.5818875"
+        rpy="3.14734716 0 3.14159265358979" />
+      <parent
+        link="bicep" />
+      <child
+        link="forearm" />
+      <axis
+        xyz="-1 0 0" />
+      <limit
+        lower="-3.14"
+        upper="3.14"
+        effort="1000.0"
+        velocity="0.5" />
+    </joint>
+    <link
+      name="wrist_pitch">
+      <inertial>
+        <origin
+          xyz="-0.0385718037884849 0.00687577876504786 0.0304837736934665"
+          rpy="0 0 0" />
+        <mass
+          value="0.349316224412942" />
+        <inertia
+          ixx="0.000239511817027156"
+          ixy="-1.32963796485264E-05"
+          ixz="3.16897927807822E-05"
+          iyy="0.000279900123553116"
+          iyz="-1.53609704753963E-05"
+          izz="0.000241934304482645" />
+      </inertial>
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/wrist_pitch.STL" />
+        </geometry>
+        <material
+          name="">
+          <color
+            rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/wrist_pitch.STL" />
+        </geometry>
+      </collision>
+    </link>
+    <joint
+      name="wrist_pitch"
+      type="revolute">
+      <origin
+        xyz="0 0 0.581887499995086"
+        rpy="1.29896997033974 -0.262305000585875 2.39226953786024" />
+      <parent
+        link="forearm" />
+      <child
+        link="wrist_pitch" />
+      <axis
+        xyz="-0.707106781186547 0 0.707106781186548" />
+      <limit
+        lower="-3.14"
+        upper="3.14"
+        effort="1000.0"
+        velocity="0.5" />
+    </joint>
+    <link
+      name="wrist_roll">
+      <inertial>
+        <origin
+          xyz="-0.00469608659940027 0.0447269657016811 0.00833184873638031"
+          rpy="0 0 0" />
+        <mass
+          value="0.362592106525576" />
+        <inertia
+          ixx="0.000391016178429715"
+          ixy="-7.49723711396477E-06"
+          ixz="0.000114761034476427"
+          iyy="0.000332093496397304"
+          iyz="1.31652315831969E-05"
+          izz="0.000251325539166139" />
+      </inertial>
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/wrist_roll.STL" />
+        </geometry>
+        <material
+          name="">
+          <color
+            rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/wrist_roll.STL" />
+        </geometry>
+      </collision>
+    </link>
+    <joint
+      name="wrist_roll"
+      type="revolute">
+      <origin
+        xyz="-0.0569438176243833 0.036939239160841 0.0135965544995152"
+        rpy="-2.57329779438292 0.575395186253053 -2.27654886557617" />
+      <parent
+        link="wrist_pitch" />
+      <child
+        link="wrist_roll" />
+      <axis
+        xyz="0 1 0" />
+      <limit
+        lower="-1.57"
+        upper="1.57"
+        effort="1000.0"
+        velocity="0.5" />
+    </joint>
+    <link
+      name="gripper_claw">
+      <inertial>
+        <origin
+          xyz="0.000942100582953659 0.0847350763547543 -0.00965150882955348"
+          rpy="0 0 0" />
+        <mass
+          value="0.15748111901793" />
+        <inertia
+          ixx="5.20057730584968E-05"
+          ixy="-8.33092551660573E-07"
+          ixz="3.07586046924981E-05"
+          iyy="8.03599267923575E-05"
+          iyz="9.73645220581752E-07"
+          izz="4.50976334470838E-05" />
+      </inertial>
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/gripper_claw.STL" />
+        </geometry>
+        <material
+          name="">
+          <color
+            rgba="1 1 1 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/gripper_claw.STL" />
+        </geometry>
+      </collision>
+    </link>
+    <joint
+      name="gripper_claw"
+      type="prismatic">
+      <origin
+        xyz="0.003627 0.065255 -0.011411"
+        rpy="1.9377 0.36582 -2.3203" />
+      <parent
+        link="wrist_roll" />
+      <child
+        link="gripper_claw" />
+      <axis
+        xyz="0 1 0" />
+      <limit
+        lower="-0.075"
+        upper="0.02"
+        effort="1000.0"
+        velocity="0.5" />
+    </joint>
+    <link
+      name="actuator">
+      <inertial>
+        <origin
+          xyz="0.00237599028848277 -0.0250469831992992 0.000880937550477365"
+          rpy="0 0 0" />
+        <mass
+          value="0.0214970659053711" />
+        <inertia
+          ixx="2.89937827339641E-05"
+          ixy="-3.30935490938563E-07"
+          ixz="-4.53016629704667E-07"
+          iyy="2.59733173212136E-06"
+          iyz="-1.87126039114866E-07"
+          izz="2.9545242454523E-05" />
+      </inertial>
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/actuator.STL" />
+        </geometry>
+        <material
+          name="">
+          <color
+            rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://description/meshes/actuator.STL" />
+        </geometry>
+      </collision>
+    </link>
+    <joint
+      name="actuator"
+      type="prismatic">
+      <origin
+        xyz="-0.059691 0.08296 0.004648"
+        rpy="2.0011 0.63832 -2.4852" />
+      <parent
+        link="gripper_claw" />
+      <child
+        link="actuator" />
+      <axis
+        xyz="0 1 0" />
+      <limit
+        lower="0"
+        upper="0.05"
+        effort="0.1"
+        velocity="0.1" />
+    </joint>
+  </xacro:macro>
+</robot>

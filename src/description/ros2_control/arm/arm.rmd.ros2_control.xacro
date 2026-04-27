@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="rmd_ros2_control" params="name">
+    <ros2_control name="${name}" type="system">
+      <hardware>
+        <plugin>rmd_ros2_control/RMDHardwareInterface</plugin>
+        <param name="update_rate">2</param> <!-- Hz -->
+        <param name="logger_rate">5</param> <!-- Hz -->
+        <param name="logger_state">0</param> <!-- 0 for off, 1 for on -->
+        <param name="can_interface">can0</param>
+      </hardware>
+
+      <joint name="shoulder_pitch">
+        <param name="node_id">0x144</param>
+        <param name="gear_ratio">100</param>
+        <param name="joint_orientation">1.0</param>
+        <param name="operating_velocity">150</param> <!-- motor dps -->
+        <param name="lower_limit">-3.141592654</param> <!-- temporary full-circle test limit, -180 deg -->
+        <param name="upper_limit">3.141592654</param> <!-- temporary full-circle test limit, 180 deg -->
+        <param name="max_range">6.283185308</param> <!-- temporary full-circle test range, 360 deg -->
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <state_interface name="motor_temperature"/>
+        <state_interface name="torque_current"/>
+      </joint>
+      
+      <joint name="elbow_pitch">
+        <param name="node_id">0x149</param>
+        <param name="gear_ratio">100</param>
+        <param name="joint_orientation">1.0</param>
+        <param name="operating_velocity">150</param> <!-- motor dps -->
+        <param name="lower_limit">-3.141592654</param> <!-- temporary full-circle test limit, -180 deg -->
+        <param name="upper_limit">3.141592654</param> <!-- temporary full-circle test limit, 180 deg -->
+        <param name="max_range">6.283185308</param> <!-- temporary full-circle test range, 360 deg -->
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <state_interface name="motor_temperature"/>
+        <state_interface name="torque_current"/>
+      </joint>
+    </ros2_control>
+  </xacro:macro>
+</robot>

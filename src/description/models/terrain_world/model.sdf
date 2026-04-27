@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<sdf version="1.7">
+  <model name="terrain_world">
+    <static>true</static>
+    <link name="terrain_world_link">
+      <visual name="terrain_world_visual">
+        <geometry>
+          <mesh>
+            <uri>model://terrain_world/meshes/terrain.dae</uri>
+          </mesh>
+        </geometry>
+        
+      </visual>
+      <collision name="terrain_world_collision">
+        <geometry>
+          <mesh>
+            <uri>model://terrain_world/meshes/terrain.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+
+  </model>
+</sdf>

@@ -1,0 +1,9 @@
+<library path="talon_ros2_control"> <!-- library path which corresponds to cmake. There will be a file called talon_ros2_control.so somewhere in install-->
+  <class name="talon_ros2_control/TALONHardwareInterface"
+         type="talon_ros2_control::TALONHardwareInterface" 
+         base_class_type="hardware_interface::SystemInterface"> <!-- name and type rely on the namespace in the hardware interface. Keep this in mind -->
+    <description>
+      UMDLoop's ros2_control plugin for the TALON motors
+    </description>
+  </class>
+</library>

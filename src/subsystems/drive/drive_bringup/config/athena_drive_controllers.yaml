@@ -1,0 +1,176 @@
+# Copyright (c) 20224 Stogl Robotics Consulting UG (haftungsbeschränkt)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#
+# Source of this file are templates in
+# [RosTeamWorkspace](https://github.com/StoglRobotics/ros_team_workspace) repository.
+#
+# Author: Dr. Denis
+#
+
+controller_manager:
+  ros__parameters:
+    update_rate: 30  # Hz
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    ackermann_steering_controller:
+      type: ackermann_steering_controller/AckermannSteeringController
+
+    front_ackermann_controller:
+      type: athena_drive_controllers/FrontAckermannController
+    
+    drive_velocity_controller:
+      type: velocity_controllers/JointGroupVelocityController
+
+    drive_position_controller:
+      type: position_controllers/JointGroupPositionController
+
+    # swerve_drive_controller:
+    #   type: drive_controllers/SwerveDriveController
+
+    # LED GPIO Controller
+    led_gpio_controller:
+      type: gpio_controllers/GpioCommandController
+
+    # Killswitch GPIO Controller
+    killswitch_gpio_controller:
+      type: gpio_controllers/GpioCommandController
+
+    motor_status_broadcaster:
+      type: general_controllers/MotorStatusBroadcaster
+    
+    rear_ackermann_controller:
+      type: athena_drive_controllers/RearAckermannController
+
+ackermann_steering_controller:
+  # unsure why but ackermann controller only goes about half of scale_linear.x in teleop_twist
+  # ackermann controller turns to at max scale_angular.yaw*pi. Seems to ignore how much you input, relies more on how fast rover is going
+  ros__parameters:
+    rear_wheels_names: ["propulsion_bl_joint", "propulsion_br_joint"] # This is traction control "propulsion_bl_joint", "propulsion_br_joint", 
+    front_wheels_names: ["steer_fl_joint", "steer_fr_joint"] # This is steering, don't ask why its just called front wheels
+    # front_steering_names: ["steer_fl_joint", "steer_fr_joint"]
+    front_wheel_track: 0.6604
+    rear_wheel_track: 0.6604
+    wheelbase: 0.8382
+    front_wheels_radius: 0.254
+    rear_wheels_radius: 0.254
+    use_stamped_vel: true
+
+front_ackermann_controller:
+  ros__parameters:
+    drive_joints:
+      - "propulsion_fl_joint"
+      - "propulsion_fr_joint"
+      - "propulsion_bl_joint"
+      - "propulsion_br_joint"
+    steer_joints:
+      - "steer_fl_joint"
+      - "steer_fr_joint"
+    wheelbase: 0.8382
+    track_width: 0.6604
+    wheel_radius: 0.125
+    # Odometry
+    open_loop: false
+    enable_odom_tf: false
+    odom_frame_id: "odom"
+    base_frame_id: "base_footprint"
+    velocity_rolling_window_size: 10
+
+drive_velocity_controller:
+  ros__parameters:
+    joints:
+      - propulsion_fl_joint
+      - propulsion_fr_joint
+      - propulsion_bl_joint
+      - propulsion_br_joint
+      - steer_fl_joint
+      - steer_fr_joint
+    interface_name: velocity
+
+drive_position_controller:
+  ros__parameters:
+    joints:
+      - propulsion_fl_joint
+      - propulsion_fr_joint
+      - propulsion_bl_joint
+      - propulsion_br_joint
+      - steer_fl_joint
+      - steer_fr_joint
+    interface_name: position
+
+# LED GPIO Controller Configuration
+led_gpio_controller:
+  ros__parameters:
+    gpios:
+      - status_led
+    command_interfaces:
+      status_led:
+        interfaces:
+          - led_command
+    state_interfaces:
+      status_led:
+        interfaces:
+          - led_state
+          - is_connected
+
+# Killswitch GPIO Controller Configuration
+killswitch_gpio_controller:
+  ros__parameters:
+    gpios:
+      - drive_killswitch
+    command_interfaces:
+      drive_killswitch:
+        interfaces:
+          - kill_all
+          - kill_main
+          - kill_jetson
+    state_interfaces:
+      drive_killswitch:
+        interfaces:
+          - kill_all_sent
+          - kill_main_sent
+          - kill_jetson_sent
+          - is_connected
+
+motor_status_broadcaster:
+  ros__parameters:
+    joints:
+      - propulsion_fl_joint
+      - propulsion_fr_joint
+      - propulsion_bl_joint
+      - propulsion_br_joint
+    interfaces:
+      - motor_temperature
+      - torque_current
+    publish_rate: 10.0
+
+
+rear_ackermann_controller:
+  ros__parameters:
+    steer_joints:
+      - "steer_bl_joint"
+      - "steer_br_joint"
+    drive_joints:
+      - "propulsion_fl_joint"
+      - "propulsion_fr_joint"
+      - "propulsion_bl_joint"
+      - "propulsion_br_joint"
+    wheelbase: 0.8382
+    track_width: 0.645
+    wheel_radius: 0.125
+    max_speed: 0.59
+    max_steering_angle: 0.785398
+    min_steering_angle: -0.785398

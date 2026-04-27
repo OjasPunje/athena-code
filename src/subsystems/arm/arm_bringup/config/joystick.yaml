@@ -1,0 +1,19 @@
+/**:
+  ros__parameters:
+    # 0: PS4    1: Thrustmaster    2: Xbox One    3: 8BitDo Ultimate
+    joystick_type: 2
+    joystick_index: -1
+
+    # can ids
+    base_yaw_id: 5
+
+    shoulder_pitch_id: 10
+
+    elbow_pitch_id: 4
+
+    wrist_pitch_id: 6
+
+    wrist_roll_id: 7
+
+    #additional parameters
+    fast_mode_multiplier: 10

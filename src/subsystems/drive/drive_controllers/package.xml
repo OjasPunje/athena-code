@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>drive_controllers</name>
+  <version>0.0.0</version>
+  <description>Controllers</description>
+  <maintainer email="duttaishan01@gmail.com">Ishan Dutta</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <build_depend>generate_parameter_library</build_depend>
+
+  <depend>control_msgs</depend>
+  <depend>umdloop_can</depend>
+  <depend>geometry_msgs</depend>
+  <depend>controller_interface</depend>
+  <depend>hardware_interface</depend>
+  <depend>nav_msgs</depend>
+  <depend>pluginlib</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
+  <depend>realtime_tools</depend>
+  <depend>std_srvs</depend>
+  <depend>tf2_msgs</depend>
+  
+  <export>
+    <build_type>ament_cmake</build_type>
+    <controller_interface plugin="${prefix}/athena_drive_controllers.xml"/>
+  </export>
+</package>
