@@ -6,6 +6,38 @@ When cloning, be sure to use `git clone --recursive [URL to Git repository]` to 
 
 ## How To Use
 
+### Docker
+
+The complete non-ZED workspace can be built and run without installing ROS on
+the host:
+
+```bash
+git submodule sync --recursive
+git submodule update --init --recursive
+git lfs pull
+docker compose build
+docker compose run --rm shell
+```
+
+The shell starts with ROS 2 Humble and the Athena overlay sourced. To start the
+headless simulation directly:
+
+```bash
+docker compose --profile simulation up simulation
+```
+
+For GUI mode, allow local X11 access and set `HEADLESS=false` (and optionally
+`RVIZ=true`). Hardware access is isolated in the privileged `hardware` profile:
+
+```bash
+xhost +local:docker
+HEADLESS=false RVIZ=true docker compose --profile simulation up simulation
+docker compose --profile hardware run --rm hardware
+```
+
+See [docs/docker.md](docs/docker.md) for rebuilding during development, CAN and
+device access, architecture support, and the optional NVIDIA/ZED image.
+
 ### Hardware Setup
 
 - Ensure CAN Bus is connected and hardware is configured to the correct IDs

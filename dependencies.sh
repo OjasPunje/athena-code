@@ -1,9 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 ARCH=$(dpkg --print-architecture)
 VERSION_ID=$(grep '^VERSION_ID=' /etc/os-release | cut -d'=' -f2 | tr -d '"')
 MAVSDK_VERSION="3.14.0"
+
+if [[ ${EUID} -eq 0 ]]; then
+    APT=(apt-get)
+    DPKG=(dpkg)
+else
+    APT=(sudo apt-get)
+    DPKG=(sudo dpkg)
+fi
 
 echo "Architecture: $ARCH"
 echo "Version ID: $VERSION_ID"
@@ -17,7 +25,7 @@ pkgs=(
 
 for pkg in "${pkgs[@]}"; do
     echo "Installing $pkg"
-    apt-get install -y "$pkg"
+    "${APT[@]}" install -y "$pkg"
 done
 
 echo "Installing MAVSDK version $MAVSDK_VERSION"
@@ -27,5 +35,5 @@ else
     PACKAGE="libmavsdk-dev_${MAVSDK_VERSION}_debian12_${ARCH}.deb"
 fi
 
-wget https://github.com/mavlink/MAVSDK/releases/download/v${MAVSDK_VERSION}/${PACKAGE}
-sudo dpkg -i ${PACKAGE}
+wget --no-clobber "https://github.com/mavlink/MAVSDK/releases/download/v${MAVSDK_VERSION}/${PACKAGE}" || true
+"${DPKG[@]}" -i "${PACKAGE}"
